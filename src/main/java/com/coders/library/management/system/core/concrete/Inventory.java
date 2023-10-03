@@ -28,7 +28,7 @@ public class Inventory implements UserInputs {
     }
 
     List<Person> getInventoryPersons() throws SQLException {
-        personDbList = personDao.getTableMethod();
+        personDbList = personDao.getAllPersons();
         return personDbList;
     }
 //    private final PersonDao personDao = new PersonDb(this);
