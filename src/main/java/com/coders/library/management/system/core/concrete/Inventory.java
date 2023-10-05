@@ -1,9 +1,7 @@
 package com.coders.library.management.system.core.concrete;
 
-import com.coders.library.management.system.business.abstarct.CommonManager;
 import com.coders.library.management.system.business.abstarct.PersonManager;
 import com.coders.library.management.system.business.abstarct.PublicationManager;
-import com.coders.library.management.system.business.concrete.CommonManagerImpl;
 import com.coders.library.management.system.business.concrete.PersonManagerImpl;
 import com.coders.library.management.system.business.abstarct.UserInputs;
 import com.coders.library.management.system.business.concrete.PublicationManagerImpl;
@@ -22,29 +20,25 @@ import java.util.List;
 public class Inventory implements UserInputs {
     List<Person> personDbList;
     private PersonDao personDao;
+    private PublicationDao publicationDao;
+    private PersonManager personManager;
+    private PublicationManager publicationManager;
 
     public Inventory() {
         personDao = new PersonDb();
+        personManager = new PersonManagerImpl(personDao);
+        publicationDao = new PublicationDb();
+        publicationManager = new PublicationManagerImpl(publicationDao);
+
     }
 
-    List<Person> getInventoryPersons() throws SQLException {
-        personDbList = personDao.getAllPersons();
-        return personDbList;
+    List<Person> getInventoryPersons() {
+        return personDao.getAllPersons();
     }
-//    private final PersonDao personDao = new PersonDb(this);
-    private final PersonManager personManager = new PersonManagerImpl(personDao);
-
-    private final PublicationDao publicationDao = new PublicationDb();
-    private final PublicationManager publicationManager = new PublicationManagerImpl(publicationDao);
-    private final CommonManager commonManager = new CommonManagerImpl();
 
     public void start() {
         System.out.println("Please login to continue");
-        try {
-            personManager.login();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        personManager.login();
     }
 
     public void inventoryMenu(Person person) {

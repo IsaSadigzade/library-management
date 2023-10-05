@@ -6,18 +6,19 @@ import com.coders.library.management.system.entities.concrete.person.Person;
 import java.sql.SQLException;
 import java.util.List;
 
-public interface PersonDao extends UserInputs,  DbOperations<Person>, PersonCheckingOperations {
-    void createMethod() throws SQLException;
+public interface PersonDao extends UserInputs,  DbOperations<Person>{
+    void createMethod();
 
-    void save(Person person) throws SQLException;
+    void save(Person person);
 
-    void update(Person person) throws SQLException;
+    void update(Person person);
 
-    void delete(int id) throws SQLException;
+    void delete(int id);
 
-    List<Person> getAllPersons() throws SQLException;
+    List<Person> getAllPersons();
 
-    List<Person> searchByParam(String paramName, String paramValue) throws SQLException;
+    List<Person> searchByParam(String paramName, String paramValue);
+    void checkAndStartByEmailAndPassword(String email, String password);
 
     int getLastIdNumber();
 }

@@ -9,15 +9,15 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class InventoryController {
-    List<Person> personDbList;
-    private PersonDao personDao;
-
-    InventoryController() {
-        personDao = new PersonDb();
-    }
-
-    List<Person> getInventoryPersons() throws SQLException {
-        personDbList = personDao.getTableMethod();
-        return personDbList;
-    }
+//    List<Person> personDbList;
+//    private PersonDao personDao;
+//
+//    InventoryController() {
+//        personDao = new PersonDb();
+//    }
+//
+//    List<Person> getInventoryPersons() throws SQLException {
+//        personDbList = personDao.getTableMethod();
+//        return personDbList;
+//    }
 }

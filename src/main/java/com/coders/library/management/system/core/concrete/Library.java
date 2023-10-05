@@ -2,23 +2,11 @@ package com.coders.library.management.system.core.concrete;
 
 import com.coders.library.management.system.business.abstarct.PersonManager;
 import com.coders.library.management.system.business.abstarct.PublicationManager;
-import com.coders.library.management.system.enums.publication.Category;
-import com.coders.library.management.system.enums.publication.Language;
-import com.coders.library.management.system.enums.publication.PublicationType;
-import com.coders.library.management.system.enums.publication.Status;
 import com.coders.library.management.system.enums.person.Gender;
 import com.coders.library.management.system.enums.person.MembershipStatus;
 import com.coders.library.management.system.enums.person.MembershipType;
 import com.coders.library.management.system.enums.person.Role;
 import com.coders.library.management.system.entities.concrete.person.User;
-import com.coders.library.management.system.entities.concrete.publication.InventoryItem;
-import com.coders.library.management.system.entities.concrete.publication.Publication;
-import com.coders.library.management.system.entities.concrete.publication.book.Book;
-import com.coders.library.management.system.entities.concrete.publication.book.BookDetail;
-import com.coders.library.management.system.entities.concrete.publication.comic.Comic;
-import com.coders.library.management.system.entities.concrete.publication.comic.ComicDetail;
-import com.coders.library.management.system.entities.concrete.publication.journal.Journal;
-import com.coders.library.management.system.entities.concrete.publication.journal.JournalDetail;
 import com.coders.library.management.system.entities.concrete.person.Admin;
 import com.coders.library.management.system.entities.concrete.person.Person;
 import com.coders.library.management.system.entities.concrete.person.SubAdmin;
@@ -62,17 +50,17 @@ public class Library {
 
     void initPersons() {
         Person admin1 = new Admin(1, Role.ADMIN, "Isa", "Sadigzade", "isa@mail.ru", "12345", Gender.MALE);
-        personManager.insertPerson(admin1);
+        personManager.addPerson(admin1);
 
         Person subAdmin1 = new SubAdmin(2, Role.SUB_ADMIN, "Ali", "Sadigli", "ali@mail.ru", "12345", Gender.MALE);
-        personManager.insertPerson(subAdmin1);
+        personManager.addPerson(subAdmin1);
 
         Person user1 = new User(3, Role.USER, "Murad", "Baylar", "murad.b@mail.ru", "12345",
                 Gender.MALE, MembershipStatus.ACTIVE_MEMBER, MembershipType.ADULT_MEMBERSHIP, 0, LocalDate.now());
-        personManager.insertPerson(user1);
+        personManager.addPerson(user1);
 
         Person user2 = new User(4, Role.USER, "Murad", "Aliyev", "murad.a@mail.ru", "12345",
                 Gender.MALE, MembershipStatus.TEMPORARY_MEMBER, MembershipType.ADULT_MEMBERSHIP, 0, LocalDate.now());
-        personManager.insertPerson(user2);
+        personManager.addPerson(user2);
     }
 }

@@ -1,10 +1,9 @@
 package com.coders.library.management.system.business.abstarct;
 
 import com.coders.library.management.system.entities.concrete.person.Person;
-import com.coders.library.management.system.entities.concrete.person.User;
 
-public interface PersonManager extends PersonOperations<Person>, UserInputs {
-    void insertPerson(Person person);
+public interface PersonManager extends PersonManagerOperations, UserInputs {
+    void addPerson(Person person);
 
     void updatePerson(Person person);
 
@@ -13,4 +12,5 @@ public interface PersonManager extends PersonOperations<Person>, UserInputs {
     void getPersonList();
 
     boolean idExists(int personId);
+
 }

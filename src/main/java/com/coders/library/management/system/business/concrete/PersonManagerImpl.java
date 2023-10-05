@@ -6,7 +6,6 @@ import com.coders.library.management.system.entities.concrete.person.Person;
 import com.coders.library.management.system.entities.concrete.person.User;
 import com.coders.library.management.system.enums.person.*;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,51 +19,35 @@ public class PersonManagerImpl implements PersonManager {
     }
 
     @Override
-    public void insertPerson(Person person) {
-        try {
-            personDao.insertMethod(person);
-            personList.add(person);
-        } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while adding and inserting a person.", e);
-        }
+    public void addPerson(Person person) {
+        personDao.save(person);
+        personList.add(person);
     }
 
     @Override
     public void updatePerson(Person person) {
-        try {
-            personDao.updateMethod(person);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        personDao.update(person);
     }
 
     @Override
     public void deletePerson(Person person) {
         // TODO: eger istifadeci sadece varsa ve tarixcesinde hec bir emeliyyat yoxdursa ve balansi 0-dirsa, onda hemin istifadecini sil
-
+        personDao.delete(person.getId());
     }
 
     public Person getPersonById(int personId) {
-        try {
-            List<Person> result = personDao.searchByParam(String.valueOf(PersonDbFields.ID), String.valueOf(personId));
-            if (!result.isEmpty()) {
-                return result.get(0);
-            } else {
-                System.out.println("User with ID " + personId + " not found.");
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException("An error occurred while fetching person by ID.", e);
+        List<Person> result = personDao.searchByParam(String.valueOf(PersonDbFields.ID), String.valueOf(personId));
+        if (!result.isEmpty()) {
+            return result.get(0);
+        } else {
+            System.out.println("User with ID " + personId + " not found.");
         }
         return null;
     }
 
     @Override
     public void getPersonList() {
-        try {
-            personDao.getTableMethod();
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
+        personDao.getAllPersons();
     }
 
     @Override
@@ -78,7 +61,7 @@ public class PersonManagerImpl implements PersonManager {
     }
 
     @Override
-    public void login() throws SQLException {
+    public void login() {
         System.out.println("Welcome to login page. If you are not member, please register before login");
         System.out.print("Select 1 for Register: \nSelect 2 for Login: ");
         int operation = INPUT_INT();
@@ -97,30 +80,12 @@ public class PersonManagerImpl implements PersonManager {
     }
 
     @Override
-    public void login(Person person) throws SQLException {
-        System.out.println("Welcome to login page. If you are not member, please register before login");
-        System.out.print("Select 1 for Register: \nSelect 2 for Login: ");
-        int operation = INPUT_INT();
-        if (operation == 1) {
-            register();
-        } else if (operation != 2) {
-            System.out.println("Invalid operation. Please retry again");
-        } else {
-            System.out.print("Email: ");
-            String email = INPUT_STRING();
-            System.out.print("Password: ");
-            String password = INPUT_STRING();
-
-            personDao.checkAndStartByEmailAndPassword(email, password);
-        }
-    }
-
-    private void loginDirectly(Person person) throws SQLException {
+    public void loginDirectly(Person person) {
         personDao.checkAndStartByEmailAndPassword(person.getEmail(), person.getPassword());
     }
 
     @Override
-    public Person register() throws SQLException {
+    public void register() {
         int id = personDao.getLastIdNumber() + 1;
         final Role role = Role.USER;
         System.out.print("Name: ");
@@ -156,8 +121,7 @@ public class PersonManagerImpl implements PersonManager {
         final LocalDate creationDate = LocalDate.now();
 
         Person person = new User(id, role, name, surname, email, password, gender, membershipStatus, membershipType, accountBalance, creationDate);
-        insertPerson(person);
+        addPerson(person);
         loginDirectly(person);
-        return person;
     }
 }

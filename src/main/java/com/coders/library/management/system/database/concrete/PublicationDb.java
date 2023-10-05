@@ -9,89 +9,15 @@ import com.coders.library.management.system.enums.publication.Status;
 import com.coders.library.management.system.entities.concrete.publication.Publication;
 
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class PublicationDb implements ConnectionDb, PublicationDao {
-    @Override
-    public void deleteMethod(Publication publication) {
-        Connection connection = connectDb();
-        String deleteQuery = "DELETE FROM PUBLICATIONS WHERE ID=?";
-
-        try {
-            toPrepareStatement(publication, deleteQuery, null);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(connection);
-        }
-    }
-
-    @Override
-    public void updateMethod(Publication publication) {
-        Connection connection = connectDb();
-        String updateQuery = "UPDATE PUBLICATIONS SET " +
-                "ID=?, TYPE=?, NAME=?, AUTHOR=?, PRICE=?, RATING=?, CATEGORY=?, LANGUAGE=?, " +
-                "PAGE_COUNT=?, PUBLISHER=?, PUBLICATION_DATE=?, QUANTITY=?, STATUS=?, " +
-                "IS_SELLABLE=?, SOLD=?, IS_BORROWABLE=?, BORROWED=?, IS_RESERVABLE=?, RESERVED=? " +
-                "WHERE ID=?";
-
-        try {
-            toPrepareStatement(publication, updateQuery, publication.getId());
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(connection);
-        }
-    }
-
-    @Override
-    public void insertMethod(Publication publication) {
-        Connection connection = connectDb();
-        String insertQuery = "INSERT INTO PUBLICATIONS (ID, TYPE, NAME, AUTHOR, PRICE, RATING, CATEGORY, LANGUAGE, PAGE_COUNT, " +
-                "PUBLISHER, PUBLICATION_DATE, QUANTITY, STATUS, IS_SELLABLE, SOLD, IS_BORROWABLE, BORROWED, IS_RESERVABLE, RESERVED)" +
-                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-        try {
-            toPrepareStatement(publication, insertQuery, null);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(connection);
-        }
-    }
-
-    @Override
-    public List<Publication> getTableMethod() {
-        Connection connection = connectDb();
-        String getTableQuery = "SELECT * FROM PUBLICATIONS";
-        try (PreparedStatement preparedStatement = connectDb().prepareStatement(getTableQuery)) {
-            try (ResultSet rs = preparedStatement.executeQuery()) {
-                while (rs.next()) {
-                    Publication publication = toResultSet(rs);
-                    System.out.println(publication);
-                }
-            }
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        } finally {
-            closeConnection(connection);
-        }
-        return null;
-    }
-
-    @Override
-    public List<Publication> searchByParam(String paramName, String paramValue) throws SQLException {
-        return null;
-    }
-
-    @Override
-    public int getLastIdNumber() {
-        return 0;
-    }
+    List<Publication> result;
 
     @Override
     public void createMethod() {
-        Connection connection = connectDb();
+        Connection connection = ConnectionDb.connectDb();
         String createTableQuery = "CREATE TABLE IF NOT EXISTS PUBLICATIONS ("
                 + "ID                   SERIAL          PRIMARY KEY,"
                 + "TYPE                 VARCHAR(50)     NOT NULL,"
@@ -113,16 +39,104 @@ public class PublicationDb implements ConnectionDb, PublicationDao {
                 + "IS_RESERVABLE        BOOLEAN         NOT NULL,"
                 + "RESERVED             INT             NOT NULL)";
 
-        try (PreparedStatement preparedStatement = connectDb().prepareStatement(createTableQuery)) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(createTableQuery)) {
             preparedStatement.execute();
             System.out.println("TABLE PUBLICATIONS CREATED");
         } catch (SQLException e) {
             throw new RuntimeException(e);
         } finally {
-            closeConnection(connection);
+            ConnectionDb.closeConnection(connection);
         }
 
     }
+
+    @Override
+    public void save(Publication publication) {
+        Connection connection = ConnectionDb.connectDb();
+        String insertQuery = "INSERT INTO PUBLICATIONS (ID, TYPE, NAME, AUTHOR, PRICE, RATING, CATEGORY, LANGUAGE, PAGE_COUNT, " +
+                "PUBLISHER, PUBLICATION_DATE, QUANTITY, STATUS, IS_SELLABLE, SOLD, IS_BORROWABLE, BORROWED, IS_RESERVABLE, RESERVED)" +
+                "VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+        try {
+            toPrepareStatement(publication, insertQuery, null);
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ConnectionDb.closeConnection(connection);
+        }
+    }
+
+    @Override
+    public void update(Publication publication) {
+        Connection connection = ConnectionDb.connectDb();
+        String updateQuery = "UPDATE PUBLICATIONS SET " +
+                "ID=?, TYPE=?, NAME=?, AUTHOR=?, PRICE=?, RATING=?, CATEGORY=?, LANGUAGE=?, " +
+                "PAGE_COUNT=?, PUBLISHER=?, PUBLICATION_DATE=?, QUANTITY=?, STATUS=?, " +
+                "IS_SELLABLE=?, SOLD=?, IS_BORROWABLE=?, BORROWED=?, IS_RESERVABLE=?, RESERVED=? " +
+                "WHERE ID=?";
+
+        try {
+            toPrepareStatement(publication, updateQuery, publication.getId());
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ConnectionDb.closeConnection(connection);
+        }
+    }
+
+    @Override
+    public void delete(int id) {
+        Connection connection = ConnectionDb.connectDb();
+        String deleteQuery = "DELETE FROM PUBLICATIONS WHERE ID=?";
+
+        try (PreparedStatement preparedStatement = connection.prepareStatement(deleteQuery)) {
+            preparedStatement.setInt(1, id);
+
+            int rowCount = preparedStatement.executeUpdate();
+
+            if (rowCount > 0) {
+                System.out.println("User has been deleted successfully");
+            } else {
+                System.out.println("User with id: " + id + " was not found");
+            }
+
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ConnectionDb.closeConnection(connection);
+        }
+    }
+
+    @Override
+    public List<Publication> getAllPublications() {
+        result = new ArrayList<>();
+        Connection connection = ConnectionDb.connectDb();
+        String getTableQuery = "SELECT * FROM PUBLICATIONS";
+        try (PreparedStatement preparedStatement = connection.prepareStatement(getTableQuery)) {
+            try (ResultSet rs = preparedStatement.executeQuery()) {
+                while (rs.next()) {
+                    Publication publication = toResultSet(rs);
+                    result.add(publication);
+                }
+            }
+        } catch (SQLException e) {
+            throw new RuntimeException(e);
+        } finally {
+            ConnectionDb.closeConnection(connection);
+        }
+        return result;
+    }
+
+    @Override
+    public List<Publication> searchByParam(String paramName, String paramValue) {
+        return null;
+    }
+
+    @Override
+    public int getLastIdNumber() {
+        return 0;
+    }
+
 
     @Override
     public Publication toResultSet(ResultSet rs) throws SQLException {
@@ -151,7 +165,7 @@ public class PublicationDb implements ConnectionDb, PublicationDao {
 
     @Override
     public void toPrepareStatement(Publication publication, String query, Integer id) throws SQLException {
-        try (PreparedStatement preparedStatement = connectDb().prepareStatement(query)) {
+        try (PreparedStatement preparedStatement = ConnectionDb.connectDb().prepareStatement(query)) {
             int index = 1;
             preparedStatement.setInt(index++, publication.getId());
             preparedStatement.setString(index++, String.valueOf(publication.getPublicationDetail().getPublicationType()));

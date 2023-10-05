@@ -14,7 +14,7 @@ public class Person {
     private String password;
     private Gender gender;
     private Set<Permission> permissions;
-    // TODO: add age or birthday
+    // TODO: addPerson age or birthday
 
     public Person(int id, Role role, String name, String surname, String email, String password, Gender gender) {
         this.id = id;
